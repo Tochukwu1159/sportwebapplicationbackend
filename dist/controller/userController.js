@@ -71,7 +71,6 @@ async function createUser(req, res) {
         const token = (0, utils_1.generateToken)({ id: ExistingUser.id });
         const html = (0, emailVerification_1.emailVerificationView)(token);
         await (0, sendmail_1.default)(fromUser, ExistingUser.email, subject, html);
-        // await sendMails.verifyUserEmail(ExistingUser.email, token as string);
         return res.status(201).json({
             message: 'user created successfully',
             record,
@@ -149,32 +148,6 @@ async function verifyUser(req, res) {
     }
 }
 exports.verifyUser = verifyUser;
-// export async function forgotPassword(req: Request, res: Response): Promise<unknown> {
-//   try {
-//     const { email } = req.body;
-//     console.log("a")
-//     const user = (await UserInstance.findOne({
-//       where: {
-//         email: email,
-//       },
-//     })) as unknown as { [key: string]: string };
-//     if (!user) {
-//       return res.status(404).json({
-//         error: 'email not found',
-//       });
-//     }
-//     const { id } = user;
-//     sendMails.verifyUserEmail(user.email, token);
-//     return res.status(200).json({
-//       message: 'Check email for the verification link',
-//     });
-//   } catch (error) {
-//     return res.status(500).json({
-//       error,
-//     });
-//     throw new Error(`${error}`);
-//   }
-// }
 async function forgotPassword(req, res) {
     try {
         const { email } = req.body;

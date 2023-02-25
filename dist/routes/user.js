@@ -14,5 +14,3 @@ router.patch('/update/:id', userController_1.updateUserRecord);
 router.patch('/change-password/:id', userController_1.changePassword);
 router.get('/getAllUsers', userController_1.getUsers);
 exports.default = router;
-
-

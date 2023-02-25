@@ -1,11 +1,10 @@
 import express, { Request, Response, NextFunction }
   from 'express';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid'
 import { options, generateToken, createUserSchema, loginUserSchema, changePasswordSchema, userUpdateSchema } from '../utils/utils'
 import { UserInstance, UsersAttributes } from '../model/user'
 import bcrypt from 'bcryptjs'
-import { SendVerificationCode, GenerateAccessCode } from '../utils/utils'
 import sendEmail from "../email/sendmail"
 import { emailVerificationView, forgotPasswordVerification } from '../email/emailVerification';
 
@@ -89,8 +88,6 @@ export async function createUser(req: Request, res: Response): Promise<unknown> 
 
     const html = emailVerificationView(token as string);
     await sendEmail(fromUser,ExistingUser.email, subject, html);
-
-    // await sendMails.verifyUserEmail(ExistingUser.email, token as string);
 
     return res.status(201).json({
       message: 'user created successfully',
@@ -180,45 +177,6 @@ export async function verifyUser(req: Request, res: Response): Promise<unknown> 
   }
 }
  
-
-
-
-
-// export async function forgotPassword(req: Request, res: Response): Promise<unknown> {
-//   try {
-//     const { email } = req.body;
-//     console.log("a")
-//     const user = (await UserInstance.findOne({
-//       where: {
-//         email: email,
-//       },
-//     })) as unknown as { [key: string]: string };
-
-
-//     if (!user) {
-//       return res.status(404).json({
-//         error: 'email not found',
-//       });
-//     }
-
-//     const { id } = user;
-  
-//     sendMails.verifyUserEmail(user.email, token);
-
-//     return res.status(200).json({
-//       message: 'Check email for the verification link',
-//     });
-//   } catch (error) {
-//     return res.status(500).json({
-//       error,
-//     });
-//     throw new Error(`${error}`);
-//   }
-// }
-
-
-
-
 export async function forgotPassword(req: Request, res: Response): Promise<unknown> {
   try {
     const { email } = req.body;
