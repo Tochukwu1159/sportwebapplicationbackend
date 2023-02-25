@@ -6,7 +6,7 @@ import { options, generateToken, createUserSchema, loginUserSchema, changePasswo
 import { UserInstance, UsersAttributes } from '../model/user'
 import bcrypt from 'bcryptjs'
 import { SendVerificationCode, GenerateAccessCode } from '../utils/utils'
-import sendEmail from '../email/sendmail';
+import sendEmail from "../email/sendmail"
 import { emailVerificationView, forgotPasswordVerification } from '../email/emailVerification';
 
 const passPhrase = process.env.JWT_SECRET as string;
