@@ -9,6 +9,7 @@ const uuid_1 = require("uuid");
 const utils_1 = require("../utils/utils");
 const user_1 = require("../model/user");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const sendmail_1 = __importDefault(require("../email/sendmail"));
 const emailVerification_1 = require("../email/emailVerification");
 const passPhrase = process.env.JWT_SECRET;
 const fromUser = process.env.FROM;
@@ -33,34 +34,27 @@ async function createUser(req, res) {
                 error: 'email is already taken',
             });
         }
-        // console.log("f")
         const duplicatePhoneNumber = await user_1.UserInstance.findOne({
             where: {
                 phonenumber: req.body.phonenumber,
             },
         });
-        console.log({ duplicatePhoneNumber });
         if (duplicatePhoneNumber) {
-            console.log({ dup: "gfdswwwww" });
             return res.status(409).json({
                 error: 'phone number already exists',
             });
         }
-        //  console.log("h")
         const duplicateUsername = await user_1.UserInstance.findOne({
             where: {
                 username: req.body.username
             },
         });
-        //  console.log("i")
         if (duplicateUsername) {
             return res.status(409).json({
                 error: 'Username already taken',
             });
         }
-        console.log("j");
         const passwordHash = await bcryptjs_1.default.hash(req.body.password, 8);
-        console.log(passwordHash);
         const record = await user_1.UserInstance.create({
             id: newId,
             email: req.body.email,
@@ -71,13 +65,13 @@ async function createUser(req, res) {
             password: passwordHash,
             isVerified: false,
         });
-        console.log("l");
-        // const token = jwt.sign({ id: newId }, passPhrase, { expiresIn: '30mins' });
-        const token = (0, utils_1.generateToken)({ id: newId });
-        console.log(token);
-        //  const html = emailVerificationView(token as string);
-        //  await Mailer.sendEmail(fromUser, req.body.email, subject, html);
-        console.log("aa");
+        const ExistingUser = (await user_1.UserInstance.findOne({
+            where: { email: req.body.email },
+        }));
+        const token = (0, utils_1.generateToken)({ id: ExistingUser.id });
+        const html = (0, emailVerification_1.emailVerificationView)(token);
+        await (0, sendmail_1.default)(fromUser, ExistingUser.email, subject, html);
+        // await sendMails.verifyUserEmail(ExistingUser.email, token as string);
         return res.status(201).json({
             message: 'user created successfully',
             record,
@@ -85,7 +79,6 @@ async function createUser(req, res) {
         });
     }
     catch (error) {
-        console.log(error, "****");
         return res.status(500).json({
             error: 'error',
         });
@@ -128,63 +121,82 @@ async function loginUser(req, res) {
 }
 exports.loginUser = loginUser;
 async function verifyUser(req, res) {
-    console.log("s");
     try {
         const { token } = req.params;
-        console.log("t", token);
-        console.log(passPhrase);
-        console.log("w");
+        console.log(token, "dghi");
         const verified = jsonwebtoken_1.default.verify(token, passPhrase);
-        console.log("a");
+        console.log(verified);
         const { id } = verified;
-        console.log("e");
         const record = await user_1.UserInstance.findOne({
             where: {
                 id: id,
             },
         });
+        if (!record) {
+            return res.status(404).json({
+                error: 'User not found',
+            });
+        }
         await record?.update({
             isVerified: true,
         });
-        return res.status(302).redirect(`${process.env.FRONTEND_URL}/user/login`);
+        return res.status(302).redirect(`${process.env.FRONTEND_URL}/login`);
     }
     catch (error) {
         return res.status(500).json({
-            error: 'Internal Server Error',
+            error: 'Server error try again later',
         });
-        throw new Error(`${error}`);
     }
 }
 exports.verifyUser = verifyUser;
+// export async function forgotPassword(req: Request, res: Response): Promise<unknown> {
+//   try {
+//     const { email } = req.body;
+//     console.log("a")
+//     const user = (await UserInstance.findOne({
+//       where: {
+//         email: email,
+//       },
+//     })) as unknown as { [key: string]: string };
+//     if (!user) {
+//       return res.status(404).json({
+//         error: 'email not found',
+//       });
+//     }
+//     const { id } = user;
+//     sendMails.verifyUserEmail(user.email, token);
+//     return res.status(200).json({
+//       message: 'Check email for the verification link',
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       error,
+//     });
+//     throw new Error(`${error}`);
+//   }
+// }
 async function forgotPassword(req, res) {
     try {
         const { email } = req.body;
-        console.log("a");
         const user = (await user_1.UserInstance.findOne({
             where: {
                 email: email,
             },
         }));
-        console.log("b");
         if (!user) {
             return res.status(404).json({
-                error: 'email not found',
+                message: 'email not found',
             });
         }
-        console.log('c');
         const { id } = user;
         const html = (0, emailVerification_1.forgotPasswordVerification)(id);
-        console.log('d');
-        //  await Mailer.sendEmail(fromUser, req.body.email, subject, html);
-        //  console.log("e")
-        return res.status(200).json({
+        await (0, sendmail_1.default)(fromUser, req.body.email, subject, html);
+        res.status(200).json({
             message: 'Check email for the verification link',
         });
     }
     catch (error) {
-        return res.status(500).json({
-            error,
-        });
+        res.status(500);
         throw new Error(`${error}`);
     }
 }
@@ -267,7 +279,8 @@ async function getUsers(req, res, next) {
     try {
         const limit = req.query?.limit;
         const offset = req.query?.offset;
-        const record = await user_1.UserInstance.findAndCountAll({ limit, offset
+        const record = await user_1.UserInstance.findAndCountAll({
+            limit, offset
         });
         res.status(200).json({
             msg: "You have successfully fetch all users",

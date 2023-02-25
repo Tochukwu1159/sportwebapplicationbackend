@@ -86,14 +86,6 @@ UserInstance.init({
         type: sequelize_1.DataTypes.BOOLEAN,
         defaultValue: false,
     },
-    otp: {
-        type: sequelize_1.DataTypes.INTEGER,
-        allowNull: true,
-    },
-    otpExpiration: {
-        type: sequelize_1.DataTypes.INTEGER,
-        allowNull: true,
-    },
 }, {
     sequelize: database_config_1.default,
     tableName: 'user'

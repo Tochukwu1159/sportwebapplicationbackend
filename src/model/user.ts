@@ -2,7 +2,7 @@ import { DataTypes, Model } from "sequelize";
 import db from '../config/database.config'
 
 
-interface UsersAttributes {
+export interface UsersAttributes {
   id: string;
   email:string;
   username: string;
@@ -11,8 +11,6 @@ interface UsersAttributes {
   avatar:string;
   password:string;
   isVerified: boolean;
-  otp?: number;
-  otpExpiration?: number;
   
 }
 
@@ -95,14 +93,7 @@ interest:{
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
-  otp: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-  },
-  otpExpiration: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-  },
+ 
 },{
     sequelize:db,
     tableName:'user'
