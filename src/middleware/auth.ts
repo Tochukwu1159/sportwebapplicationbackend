@@ -11,7 +11,7 @@ export async function auth(req:Request | any, res:Response, next:NextFunction){
         Error: 'Kindly sign in as a user'
       }) 
     }
-    console.log("a")
+    
     const token = authorization?.slice(7, authorization.length) as string
 
     let verified = jwt.verify(token, secret);
@@ -30,7 +30,7 @@ export async function auth(req:Request | any, res:Response, next:NextFunction){
          Error:'User not verified'
        })
    }
-   console.log("a")
+   
 
 req.user = verified  //THE USER VERIFIED
 next()

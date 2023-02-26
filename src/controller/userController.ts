@@ -21,14 +21,14 @@ export async function createUser(req: Request, res: Response): Promise<unknown> 
 
 
     const validationResult = createUserSchema.validate(req.body, options);
-    //  console.log("d")
+    
 
     if (validationResult.error) {
       return res.status(400).json({
         error: validationResult.error.details[0].message,
       });
     }
-    //  console.log("e")
+   
     const duplicateEmail = await UserInstance.findOne({
       where: { email: req.body.email },
     });
@@ -148,10 +148,10 @@ export async function verifyUser(req: Request, res: Response): Promise<unknown> 
   try {
    
     const { token } = req.params;
-    console.log(token, "dghi")
+ 
 
     const verified = jwt.verify(token, passPhrase)
-    console.log(verified)
+   
 
     const { id } = verified as { [key: string]: string };
 
@@ -253,7 +253,7 @@ export async function updateUserRecord(req: Request, res: Response): Promise<unk
     const { id } = req.params;
     const record = await UserInstance.findOne({ where: { id } });
 
-    console.log("a")
+
 
     if (!record) {
       return res.status(400).json({ error: 'Invalid ID, User not found' });
