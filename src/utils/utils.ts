@@ -7,7 +7,7 @@ export const createUserSchema = Joi.object().keys({
     username: Joi.string().trim().lowercase().required(),
     interest:Joi.string().trim().lowercase().required(),
     phonenumber:Joi.string().required(),
-    password:Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/),
+    password:Joi.string().required(),
     confirm_password:Joi.ref("password")
 }).with('password', 'confirm_password')
 
@@ -24,7 +24,7 @@ export const userUpdateSchema = Joi.object().keys({
 
 export const loginUserSchema = Joi.object().keys({
     userInfo: Joi.string().trim().lowercase().required(),
-    password:Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/),
+    password:Joi.string().required(),
   
 })
 export const changePasswordSchema = Joi.object()
