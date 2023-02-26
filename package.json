@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "tsc",
+    "start:prod": "tsc && node ./bin/www",
     "start": "node ./bin/www"
   },
   "dependencies": {
