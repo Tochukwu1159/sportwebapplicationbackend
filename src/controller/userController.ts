@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { options, generateToken, createUserSchema, loginUserSchema, changePasswordSchema, userUpdateSchema } from '../utils/utils'
 import { UserInstance, UsersAttributes } from '../model/user'
 import bcrypt from 'bcryptjs'
-import sendEmail from "../email/sendmail"
+import { sendEmail } from "../email/sendmail"
 import { emailVerificationView, forgotPasswordVerification } from '../email/emailVerification';
 
 const passPhrase = process.env.JWT_SECRET as string;

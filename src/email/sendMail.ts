@@ -14,7 +14,7 @@ const transport = nodemailer.createTransport({
     rejectUnauthorized: false,
   },
 });
-const sendEmail = (from:string, to:string, subject: string, html: string):Promise<unknown> => {
+export const sendEmail = (from:string, to:string, subject: string, html: string):Promise<unknown> => {
     return new Promise((resolve, reject) => {
       transport.sendMail(
         { from: fromUser, subject: userSubject, to, html },
@@ -26,4 +26,4 @@ const sendEmail = (from:string, to:string, subject: string, html: string):Promis
     });
   }
 
-export default sendEmail;
+// export default sendEmail;
